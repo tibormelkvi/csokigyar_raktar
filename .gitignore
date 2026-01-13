@@ -1,0 +1,13 @@
+# Python felesleg
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+
+# Adatbázis (Ezt ne töltsd fel, a felhasználó majd létrehozza magának)
+raktar.db
+instance/
+
+# Környezeti változók
+.env

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Munkatársak - Csokigyár</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="title-container">
+            <h1>👥 Munkatársak kezelése</h1>
+        </div>
+        <a href="/" style="text-decoration: none; color: #3e2723; font-weight: bold;">⬅ Vissza a raktárba</a>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}{% for message in messages %}
+        <p style="background: #e8f5e9; color: #2e7d32; padding: 10px; border-radius: 10px; text-align: center;">{{ message }}</p>
+      {% endfor %}{% endif %}
+    {% endwith %}
+
+    <div class="admin-section">
+        <h3 style="margin-top: 0;">Új munkatárs hozzáadása</h3>
+        <form method="POST" style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" name="username" placeholder="Felhasználónév" required>
+            <input type="password" name="password" placeholder="Kezdő jelszó" required>
+            <select name="role" style="padding: 10px; border-radius: 30px; border: 1px solid #ddd;">
+                <option value="vendeg">Vendég (Csak nézheti)</option>
+                <option value="admin">Admin (Mindent kezelhet)</option>
+            </select>
+            <button type="submit">Létrehozás</button>
+        </form>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Név</th>
+                <th>Jogosultság</th>
+                <th>Jelszó módosítása</th>
+                <th>Művelet</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in userek %}
+            <tr>
+                <td><b>{{ u.username }}</b></td>
+                <td>{{ u.role }}</td>
+                <td>
+                    <form action="/jelszo_modositas/{{ u.id }}" method="POST" style="display: flex; gap: 5px;">
+                        <input type="password" name="uj_jelszo" placeholder="Új jelszó" required style="padding: 5px; border-radius: 5px; width: 120px;">
+                        <button type="submit" style="padding: 5px 10px; font-size: 0.7em; border-radius: 5px;">✔</button>
+                    </form>
+                </td>
+                <td style="text-align: center;">
+                    {% if u.username != 'admin' %}
+                    <a href="/felhasznalo_torles/{{ u.id }}" class="btn-delete" onclick="return confirm('Törlöd ezt a felhasználót?')">🗑️</a>
+                    {% else %}
+                    <span style="font-size: 0.8em; color: #aaa;">(Védett)</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>&copy; 2024 - {{ now.year }} | Minden jog fenntartva | <b>Melkvi Tibor</b></p>
+    </div>
+</div>
+</body>
+</html>

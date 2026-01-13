@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Csokigyár Profi Raktár</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CsokiRaktár">
+    
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='app-ikon.jpg') }}?v=101">
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='app-ikon.jpg') }}?v=101">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}?v=101">
+    
+    <meta name="theme-color" content="#3e2723">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="title-container">
+            <img src="{{ url_for('static', filename='profil.jpg') }}?v=2" alt="Logó" class="header-logo">
+            <h1>Csokigyár Raktár</h1>
+        </div>
+        <div class="user-info">
+            Belépve: <b>{{ current_user.username }}</b><br>
+            {% if current_user.role == 'admin' %}
+                <a href="/felhasznalok" style="color: #d4af37; text-decoration: none; font-weight: bold;">👥 Felhasználók</a> |
+            {% endif %}
+            <a href="/logout" style="color: #f44336; text-decoration: none;">Kijelentkezés</a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}{% for message in messages %}
+        <div style="background: #fff3e0; color: #e65100; padding: 10px; border-radius: 10px; text-align: center; border: 1px solid #ffcc80; margin-bottom: 20px;">
+          {{ message }}
+        </div>
+      {% endfor %}{% endif %}
+    {% endwith %}
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+        <div style="background: #3e2723; color: #d4af37; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <small>Összes készlet</small><br>
+            <b style="font-size: 1.4em;">{{ "%.1f"|format(osszes_kg) }} kg</b>
+        </div>
+        <div style="background: {% if keves_keszlet > 0 %}#f44336{% else %}#4CAF50{% endif %}; color: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <small>Kifogyóban</small><br>
+            <b style="font-size: 1.4em;">{{ keves_keszlet }} tétel</b>
+        </div>
+        <div style="background: white; border: 2px solid #3e2723; padding: 15px; border-radius: 12px; text-align: center;">
+            <a href="/export" style="text-decoration: none; color: #3e2723;">
+                <small>Havi jelentés</small><br>
+                <b style="font-size: 1.1em;">📥 Excel (CSV)</b>
+            </a>
+        </div>
+    </div>
+
+    <div class="search-section">
+        <input type="text" id="searchInput" onkeyup="searchFunction()" placeholder="Keresés termék vagy csoport alapján...">
+    </div>
+
+    {% if current_user.role == 'admin' %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div class="admin-section">
+            <h3>📁 Új csoport</h3>
+            <form action="/kategoria_hozzaadas" method="POST" style="display: flex; gap: 10px;">
+                <input type="text" name="kategoria_nev" placeholder="Csoport neve" required>
+                <button type="submit">Létrehozás</button>
+            </form>
+        </div>
+        <div class="admin-section">
+            <h3>🍫 Új tétel</h3>
+            <form action="/hozzaadas" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="form-row">
+                    <input type="text" name="nev" placeholder="Név" required class="flex-2">
+                    <input type="number" name="mennyiseg" placeholder="Kg" step="0.1" required class="flex-1">
+                    <input type="number" name="min_szint" placeholder="Min" step="0.1" class="flex-1">
+                </div>
+                <select name="kategoria_id">
+                    <option value="">-- Csoport választása --</option>
+                    {% for kat in kategoriak %}<option value="{{ kat.id }}">{{ kat.nev }}</option>{% endfor %}
+                </select>
+                <button type="submit">Hozzáadás</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <div id="inventoryTable">
+        {% for kat in kategoriak %}
+            <h2 style="color: #3e2723; border-bottom: 2px solid #d4af37; padding-bottom: 5px; margin-top: 30px;">{{ kat.nev }}</h2>
+            <table>
+                <thead><tr><th>Megnevezés</th><th>Készlet</th>{% if current_user.role == 'admin' %}<th>Művelet</th>{% endif %}</tr></thead>
+                <tbody>
+                    {% for t in kat.termekek|sort(attribute='nev') %}
+                    <tr class="product-row" {% if t.mennyiseg <= t.min_szint %}style="background-color: #fff1f1;"{% endif %}>
+                        <td class="termek-nev">{{ t.nev }} {% if t.mennyiseg <= t.min_szint %}<span style="color: red;">⚠️</span>{% endif %}</td>
+                        <td><b>{{ t.mennyiseg }}</b> kg</td>
+                        {% if current_user.role == 'admin' %}
+                        <td>
+                            <a href="/szerkesztes/{{ t.id }}" class="btn-edit">✏️</a>
+                            <a href="/torles/{{ t.id }}" class="btn-delete" onclick="return confirm('Törlöd?')">🗑️</a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+        
+        {% if egyeb_termekek %}
+            <h2 style="color: #3e2723; border-bottom: 2px solid #d4af37; padding-bottom: 5px; margin-top: 30px;">Egyéb termékek</h2>
+            <table>
+                <thead><tr><th>Megnevezés</th><th>Készlet</th>{% if current_user.role == 'admin' %}<th>Művelet</th>{% endif %}</tr></thead>
+                <tbody>
+                    {% for t in egyeb_termekek %}
+                    <tr class="product-row" {% if t.mennyiseg <= t.min_szint %}style="background-color: #fff1f1;"{% endif %}>
+                        <td class="termek-nev">{{ t.nev }} {% if t.mennyiseg <= t.min_szint %}<span style="color: red;">⚠️</span>{% endif %}</td>
+                        <td><b>{{ t.mennyiseg }}</b> kg</td>
+                        {% if current_user.role == 'admin' %}
+                        <td>
+                            <a href="/szerkesztes/{{ t.id }}" class="btn-edit">✏️</a>
+                            <a href="/torles/{{ t.id }}" class="btn-delete" onclick="return confirm('Törlöd?')">🗑️</a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    <div class="admin-section" style="margin-top: 40px; background: #fafafa;">
+        <h3 style="font-size: 1em; color: #666;">📜 Utolsó mozgások</h3>
+        <table style="font-size: 0.8em; border: none;">
+            {% for n in naplo %}
+            <tr style="background: transparent;">
+                <td style="color: #999; width: 130px;">{{ n.idopont.strftime('%m.%d %H:%M') }}</td>
+                <td><b>{{ n.felhasznalo }}</b></td>
+                <td>{{ n.esemeny }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>&copy; {{ now.year }} Csokoládégyár Raktár v3.6 | <b>Melkvi Tibor</b></p>
+    </div>
+</div>
+
+<script>
+function searchFunction() {
+    let input = document.getElementById("searchInput"), filter = input.value.toUpperCase();
+    let rows = document.getElementsByClassName("product-row");
+    for (let i = 0; i < rows.length; i++) {
+        let txt = rows[i].querySelector(".termek-nev").textContent || rows[i].querySelector(".termek-nev").innerText;
+        rows[i].style.display = txt.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+    }
+}
+</script>
+</body>
+</html>

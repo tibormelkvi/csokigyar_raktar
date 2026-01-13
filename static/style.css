@@ -1,0 +1,237 @@
+/* static/style.css */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+    --primary-color: #3e2723; /* Mély csoki */
+    --accent-color: #d4af37;  /* Arany */
+    --bg-gradient: linear-gradient(135deg, #2c1810 0%, #4e342e 100%);
+    --card-bg: rgba(255, 255, 255, 0.95);
+}
+
+body { 
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    font-family: 'Poppins', sans-serif;
+    color: #444;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.container {
+    max-width: 1000px;
+    width: 100%;
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px); /* Üveg hatás */
+}
+
+h1 { 
+    font-family: 'Playfair Display', serif;
+    color: var(--primary-color);
+    font-size: 2.5em;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Kártya stílus az admin részhez */
+.admin-section {
+    background: #fdf5e6;
+    border-left: 5px solid var(--accent-color);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    transition: transform 0.3s ease;
+}
+
+.admin-section:hover {
+    transform: translateY(-5px); /* Finom emelkedés */
+}
+
+/* Modern táblázat */
+table { 
+    width: 100%; 
+    border-collapse: separate;
+    border-spacing: 0 10px; /* Sorok közötti rés */
+}
+
+th { 
+    color: #888;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    letter-spacing: 2px;
+    padding: 15px;
+}
+
+tr td {
+    background: white;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* Lekerekített sorok */
+tr td:first-child { border-radius: 15px 0 0 15px; }
+tr td:last-child { border-radius: 0 15px 15px 0; }
+
+tr:hover td {
+    background: #fffcf0;
+    color: var(--primary-color);
+}
+
+/* Gombok */
+button {
+    background: var(--primary-color);
+    color: var(--accent-color);
+    border: 2px solid var(--accent-color);
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+button:hover {
+    background: var(--accent-color);
+    color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+.footer {
+    margin-top: 50px;
+    padding: 30px 0;
+    border-top: 1px solid rgba(62, 39, 35, 0.1);
+    text-align: center;
+    font-size: 0.85em;
+    color: #888;
+    line-height: 1.6;
+}
+
+.footer b {
+    color: var(--primary-color);
+    transition: color 0.3s;
+}
+
+.footer:hover b {
+    color: var(--accent-color); /* Arany színre vált hovernél */
+}
+
+.footer-version {
+    font-style: italic;
+    font-size: 0.8em;
+    opacity: 0.6;
+}
+/* Profil kép stílusa a bejelentkezéshez */
+.profile-pic {
+    width: 220px;          /* A kép szélessége */
+    height: 220px;         /* A kép magassága */
+    object-fit: cover;     /* Megtartja az arányokat, nem torzítja a fejet */
+    border-radius: 50%;    /* Ez teszi tökéletesen kör alakúvá */
+    border: 3px solid var(--accent-color); /* Arany keret */
+    margin: 0 auto 20px auto;  /*Középre teszi és helyet hagy alatta */
+    display: block;        /* Kell a középre igazításhoz */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Kis árnyék a mélységhez */
+}
+/* Logó stílusa a fejlécben */
+.header-logo {
+    width: 60px;           /* Kisebb méret a fejlécbe */
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;    /* Kör alak */
+    border: 2px solid var(--accent-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* A fejléc elrendezése, hogy a logó és a cím jól mutasson egymás mellett */
+.title-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+/* --- RESZPONZÍV BEÁLLÍTÁSOK --- */
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px; /* Kevesebb hely a széleken mobilnál */
+    }
+
+    .container {
+        padding: 20px;
+        border-radius: 15px; /* Kisebb lekerekítés mobilon */
+    }
+
+    .header {
+        flex-direction: column; /* Egymás alá kerül a logó és a bejelentkezési infó */
+        text-align: center;
+        gap: 20px;
+    }
+
+    .user-info {
+        text-align: center !important;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+    }
+
+    .title-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    h1 {
+        font-size: 1.8em; /* Kisebb betűk, hogy kiférjenek */
+    }
+
+    /* A táblázat mobilon görgethető legyen, ne lógjon ki */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .admin-section form {
+        flex-direction: column; /* Az új tétel hozzáadása egymás alá kerül */
+        display: flex;
+    }
+
+    input, button, select {
+        width: 100%; /* Minden gomb és beviteli mező teljes szélességű lesz */
+        box-sizing: border-box;
+    }
+
+    .footer {
+        font-size: 0.75em;
+    }
+}/* Új tétel sor elrendezése */
+.form-row {
+    display: flex; 
+    gap: 10px;
+    width: 100%;
+}
+
+.flex-1 { flex: 1; min-width: 0; } /* A min-width: 0 a kulcs! */
+.flex-2 { flex: 2; min-width: 0; }
+
+/* Általános input szépítés */
+input[type="text"], 
+input[type="number"], 
+select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+    box-sizing: border-box; /* Ez biztosítja, hogy ne lógjon ki a padding miatt */
+}
+
+input:focus {
+    border-color: var(--accent-color);
+}
+
+/* Mobil nézet javítása */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column; /* Mobilon egymás alá kerülnek */
+    }
+}

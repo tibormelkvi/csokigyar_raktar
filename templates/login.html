@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bejelentkezés - Csokigyár</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body style="align-items: center; display: flex; justify-content: center; height: 100vh; margin: 0;">
+    <div class="container" style="max-width: 400px; text-align: center;">
+        
+        <img src="{{ url_for('static', filename='profil.jpg') }}" alt="Profil kép" class="profile-pic">
+
+        <h1>🍫 Belépés</h1>
+        <p style="color: #888; margin-bottom: 30px;">Üdvözöljük a Raktárkezelőben!</p>
+        
+        <form method="POST" style="flex-direction: column; display: flex; gap: 15px;">
+            <input type="text" name="username" placeholder="Felhasználónév" required>
+            <input type="password" name="password" placeholder="Jelszó" required>
+            <button type="submit">Bejelentkezés</button>
+        </form>
+        
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <p style="color: #f44336; margin-top: 20px; font-weight: bold;">{{ message }}</p>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="footer">
+            <p>&copy; {{ now.year }} | <b>Melkvi Tibor</b></p>
+        </div>
+    </div>
+</body>
+</html>

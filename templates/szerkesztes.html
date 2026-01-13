@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Szerkesztés</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container" style="max-width: 500px; margin-top: 50px;">
+    <div class="admin-section">
+        <h2>Tétel szerkesztése</h2>
+        <form method="POST">
+            <label>Termék neve:</label>
+            <input type="text" name="nev" value="{{ termek.nev }}" required>
+            
+            <label>Készlet (kg):</label>
+            <input type="number" name="mennyiseg" value="{{ termek.mennyiseg }}" step="0.1" required>
+            
+            <label>Minimum készlet (Riasztási szint):</label>
+            <input type="number" name="min_szint" value="{{ termek.min_szint }}" step="0.1" required>
+            
+            <div style="margin-top: 20px;">
+                <button type="submit" style="background: #4CAF50;">Mentés</button>
+                <a href="/" style="text-decoration: none; color: #666; margin-left: 15px;">Mégse</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
